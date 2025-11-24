@@ -1,0 +1,8 @@
+npm run dev   
+npm start  
+npm i express mongoose dotenv 
+npm i -D nodemon    
+npm install cors
+npm install @sendgrid/mail
+npm i nodemailer 
+npm install express mongoose dotenv bcryptjs jsonwebtoken cors
