@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import MemberModel from "../models/memberModal.js";
 
-export const adminAuth = async (req, res, next) => {
+export const superAdminAuth = async (req, res, next) => {
   try {
     const token = req.header("Authorization")?.replace("Bearer ", "");
     if (!token) {
@@ -11,8 +11,8 @@ export const adminAuth = async (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const member = await MemberModel.findById(decoded.id);
     
-    if (!member || (member.role !== "admin" && member.role !== "super_admin")) {
-      return res.status(403).json({ message: "Access denied. Admin only." });
+    if (!member || member.role !== "super_admin") {
+      return res.status(403).json({ message: "Access denied. Super admin only." });
     }
     
     req.user = member;

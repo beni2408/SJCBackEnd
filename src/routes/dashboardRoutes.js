@@ -1,7 +1,12 @@
+import { Router } from "express";
+import { getDashboard } from "../controllers/dashboardController.js";
 import jwt from "jsonwebtoken";
 import MemberModel from "../models/memberModal.js";
 
-export const adminAuth = async (req, res, next) => {
+const dashboardRouter = Router();
+
+// Middleware for authenticated users
+const userAuth = async (req, res, next) => {
   try {
     const token = req.header("Authorization")?.replace("Bearer ", "");
     if (!token) {
@@ -11,8 +16,8 @@ export const adminAuth = async (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const member = await MemberModel.findById(decoded.id);
     
-    if (!member || (member.role !== "admin" && member.role !== "super_admin")) {
-      return res.status(403).json({ message: "Access denied. Admin only." });
+    if (!member) {
+      return res.status(401).json({ message: "Invalid token" });
     }
     
     req.user = member;
@@ -21,3 +26,7 @@ export const adminAuth = async (req, res, next) => {
     res.status(401).json({ message: "Invalid token" });
   }
 };
+
+dashboardRouter.get("/", userAuth, getDashboard);
+
+export default dashboardRouter;
