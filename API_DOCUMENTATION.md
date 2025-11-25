@@ -1,6 +1,10 @@
 # St. John's Church Management System - API Documentation
 
-## Base URL: `http://localhost:1212/api`
+## Base URLs
+
+**Production (Render):** `https://sjcparishconnectbackend.onrender.com/api`
+
+**Local Development:** `http://localhost:1212/api`
 
 ## Authentication
 
