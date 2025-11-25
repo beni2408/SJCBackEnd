@@ -37,14 +37,24 @@ const specialOfferingSchema = new mongoose.Schema(
   {
     donorName: {
       type: String,
-      required: true,
     },
-    amount: {
-      type: Number,
-      required: true,
+    email: {
+      type: String,
+    },
+    mobile: {
+      type: String,
+    },
+    address: {
+      type: String,
+    },
+    description: {
+      type: String,
     },
     purpose: {
       type: String,
+    },
+    amount: {
+      type: Number,
       required: true,
     },
     date: {

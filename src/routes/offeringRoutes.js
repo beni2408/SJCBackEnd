@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { recordMonthlyOffering, recordSpecialOffering, getMonthlyOfferingStatus } from "../controllers/offeringController.js";
+import { recordMonthlyOffering, updateMonthlyOffering, deleteMonthlyOffering, recordSpecialOffering, updateSpecialOffering, deleteSpecialOffering, getAllSpecialOfferings, getMonthlyOfferingStatus, getAllMonthlyOfferings } from "../controllers/offeringController.js";
 import { adminAuth } from "../middleware/adminAuth.js";
 import jwt from "jsonwebtoken";
 import MemberModel from "../models/memberModal.js";
@@ -29,7 +29,13 @@ const userAuth = async (req, res, next) => {
 };
 
 offeringRouter.post("/monthly", adminAuth, recordMonthlyOffering);
+offeringRouter.put("/update-monthly", adminAuth, updateMonthlyOffering);
+offeringRouter.delete("/delete-monthly", adminAuth, deleteMonthlyOffering);
 offeringRouter.post("/special", adminAuth, recordSpecialOffering);
+offeringRouter.put("/update-special/:id", adminAuth, updateSpecialOffering);
+offeringRouter.delete("/delete-special/:id", adminAuth, deleteSpecialOffering);
+offeringRouter.get("/all-special", adminAuth, getAllSpecialOfferings);
+offeringRouter.get("/all-monthly", adminAuth, getAllMonthlyOfferings);
 offeringRouter.get("/monthly-status/:hometaxno", userAuth, getMonthlyOfferingStatus);
 
 export default offeringRouter;

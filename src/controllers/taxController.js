@@ -75,6 +75,12 @@ export const recordTaxPayment = async (req, res) => {
   try {
     const { hometaxno, taxType, taxYear, amountPaid, paidBy, paidDate } = req.body;
     
+    // Check if hometaxno exists
+    const familyExists = await MemberModel.findOne({ hometaxno });
+    if (!familyExists) {
+      return res.status(400).json({ message: "Enter valid hometaxno" });
+    }
+    
     const existingPayment = await TaxPaymentModel.findOne({ hometaxno, taxType, taxYear });
     if (existingPayment) {
       return res.status(400).json({ message: "Tax already paid for this family" });
@@ -100,6 +106,12 @@ export const recordTaxPayment = async (req, res) => {
 export const updateTaxPayment = async (req, res) => {
   try {
     const { hometaxno, taxType, taxYear, amountPaid, paidBy, paidDate } = req.body;
+    
+    // Check if hometaxno exists
+    const familyExists = await MemberModel.findOne({ hometaxno });
+    if (!familyExists) {
+      return res.status(400).json({ message: "Enter valid hometaxno" });
+    }
     
     const payment = await TaxPaymentModel.findOne({ hometaxno, taxType, taxYear });
     if (!payment) {
@@ -173,7 +185,9 @@ export const getTaxStatus = async (req, res) => {
           paidAmount: payment.amountPaid,
           paidBy: payment.paidBy,
           paidDate: payment.paidDate,
-          paymentDate: payment.createdAt
+          paymentDate: payment.createdAt,
+          recordedBy: payment.updatedBy,
+          recordedAt: payment.createdAt
         });
       } else {
         pendingTaxes.push({
@@ -217,7 +231,9 @@ export const getTaxOverviewByID = async (req, res) => {
       paidAmount: p.amountPaid,
       paidBy: p.paidBy,
       paidDate: p.paidDate,
-      paymentDate: p.createdAt
+      paymentDate: p.createdAt,
+      recordedBy: p.updatedBy,
+      recordedAt: p.createdAt
     }));
     
     // Get actual count of unique families (hometaxno) from members

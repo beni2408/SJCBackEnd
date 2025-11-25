@@ -186,7 +186,9 @@
       "paidAmount": 1000,
       "paidBy": "MID01230001",
       "paidDate": "2025-01-15",
-      "paymentDate": "2025-01-15T10:30:00Z"
+      "paymentDate": "2025-01-15T10:30:00Z",
+      "recordedBy": "MID00230002",
+      "recordedAt": "2025-01-15T10:30:00Z"
     }
   ],
   "summary": {
@@ -215,16 +217,159 @@
 }
 ```
 
+- Fails if offering already exists for that month
+
+### Update Monthly Offering (Admin Only)
+
+**PUT** `/offering/update-monthly`
+
+```json
+{
+  "hometaxno": "123",
+  "offeringType": "Paribalana Committee",
+  "month": 1,
+  "year": 2025,
+  "amount": 150
+}
+```
+
+### Delete Monthly Offering (Admin Only)
+
+**DELETE** `/offering/delete-monthly`
+
+```json
+{
+  "hometaxno": "123",
+  "offeringType": "Paribalana Committee",
+  "month": 1,
+  "year": 2025
+}
+```
+
 ### Record Special Offering (Admin Only)
 
 **POST** `/offering/special`
 
 ```json
 {
-  "donorName": "Anonymous Donor",
-  "amount": 5000,
+  "donorName": "John Doe",
+  "email": "john@example.com",
+  "mobile": "9876543210",
+  "address": "123 Main St",
+  "description": "For church renovation",
   "purpose": "Church Construction",
+  "amount": 5000,
   "date": "2025-01-15"
+}
+```
+
+- Only `amount` is required, all other fields are optional
+- For urgent situations when donor details are not available
+
+### Update Special Offering (Admin Only)
+
+**PUT** `/offering/update-special/OFFERING_ID`
+
+```json
+{
+  "donorName": "Updated Name",
+  "amount": 6000,
+  "date": "2025-01-16"
+}
+```
+
+### Delete Special Offering (Admin Only)
+
+**DELETE** `/offering/delete-special/OFFERING_ID`
+
+### Get All Special Offerings (Admin Only)
+
+**GET** `/offering/all-special?year=2025&month=1`
+
+- Query params: `year`, `month` (both optional)
+- Returns count, total amount, and list of all special offerings
+
+### Get All Monthly Offerings Overview (Admin Only)
+
+**GET** `/offering/all-monthly?offeringType=Paribalana Committee&month=1&year=2025`
+
+- Query params: `offeringType`, `month`, `year` (all optional)
+- Shows all families with paid/pending status
+- Defaults to current month and Paribalana Committee
+- **Offering Types**: "Paribalana Committee" or "Church Construction"
+
+**Examples:**
+- `/offering/all-monthly?offeringType=Paribalana Committee&month=1&year=2025` (specific type)
+- `/offering/all-monthly?offeringType=Church Construction&month=2&year=2025` (specific type)
+- `/offering/all-monthly` (shows BOTH offering types for current month)
+
+**Response for specific offering type:** (same as before)
+
+**Response for all offering types:**
+```json
+{
+  "offeringInfo": {
+    "month": 1,
+    "year": 2025,
+    "showingAllTypes": true
+  },
+  "offerings": {
+    "Paribalana Committee": {
+      "statistics": {
+        "totalFamilies": 250,
+        "paidFamilies": 45,
+        "pendingFamilies": 205,
+        "paidPercentage": 18,
+        "totalPaidAmount": 4500
+      },
+      "paidFamilies": [...],
+      "pendingFamilies": [...]
+    },
+    "Church Construction": {
+      "statistics": {
+        "totalFamilies": 250,
+        "paidFamilies": 32,
+        "pendingFamilies": 218,
+        "paidPercentage": 13,
+        "totalPaidAmount": 6400
+      },
+      "paidFamilies": [...],
+      "pendingFamilies": [...]
+    }
+  }
+}
+```
+
+**Response:**
+```json
+{
+  "offeringInfo": {
+    "offeringType": "Paribalana Committee",
+    "month": 1,
+    "year": 2025
+  },
+  "statistics": {
+    "totalFamilies": 250,
+    "paidFamilies": 45,
+    "pendingFamilies": 205,
+    "paidPercentage": 18,
+    "totalPaidAmount": 4500
+  },
+  "paidFamilies": [
+    {
+      "hometaxno": "123",
+      "amount": 100,
+      "recordedBy": "MID00230002",
+      "recordedAt": "2025-01-15T10:30:00Z",
+      "updatedAt": "2025-01-15T10:30:00Z"
+    }
+  ],
+  "pendingFamilies": [
+    {
+      "hometaxno": "124",
+      "status": "pending"
+    }
+  ]
 }
 ```
 
@@ -244,18 +389,64 @@
 
 **POST** `/committee/add`
 
+**For LCF Committee:**
 ```json
 {
+  "memberID": "MID01230001",
   "name": "John Doe",
   "committeeType": "LCF",
-  "position": "President",
+  "position": "Secretary",
   "year": 2025,
   "phone": "9876543210",
   "email": "john@example.com",
-  "photo": "photo_url",
-  "hierarchy": 1
+  "photo": "photo_url"
 }
 ```
+
+- **Valid LCF Positions**: Secretary, Treasurer, Member
+- **Restrictions**: Only 1 Secretary and 1 Treasurer per year
+
+**For Pastorate Committee:**
+```json
+{
+  "memberID": "MID01230001",
+  "name": "John Doe",
+  "committeeType": "Pastorate",
+  "position": "DC",
+  "year": 2025,
+  "age": 45,
+  "gender": "male",
+  "memberCategory": "DC",
+  "phone": "9876543210",
+  "email": "john@example.com",
+  "photo": "photo_url"
+}
+```
+
+- **Valid Pastorate Positions**: DC, Secretary, Treasurer, Member
+- **Required Fields for Pastorate**: age, gender, memberCategory
+
+**LCF Committee Rules:**
+- **Unlimited members** allowed
+- **Only 1 Secretary** per year (hierarchy 1)
+- **Only 1 Treasurer** per year (hierarchy 2)
+- **Unlimited Members** (hierarchy 3)
+- **Valid Positions**: Secretary, Treasurer, Member
+
+**Pastorate Committee Rules:**
+- **Maximum 18 members** total
+- **Only 2 DC members** (hierarchy 1-2, older person gets hierarchy 1)
+- **Only 1 Secretary** (hierarchy 3)
+- **Only 1 Treasurer** (hierarchy 4)
+- **Maximum 2 Under35** members
+- **Maximum 2 Women** members
+- **Maximum 3 CC** members
+- **Rest ordered by age** (older gets lower hierarchy)
+- **Valid Positions**: DC, Secretary, Treasurer, Member
+- **Required Fields**: age, gender, memberCategory
+
+**Member Categories for Pastorate:** DC, Secretary, Treasurer, Under35, Women, CC, Regular
+**Gender Options:** male, female
 
 ### Update Committee Member (Admin Only)
 
@@ -277,6 +468,33 @@
 ### Delete Committee Member (Admin Only)
 
 **DELETE** `/committee/delete/COMMITTEE_ID`
+
+### Add Reverend (Admin Only)
+
+**POST** `/committee/add-reverend`
+
+```json
+{
+  "name": "Rev. John Smith",
+  "position": "Council Chairman",
+  "year": 2025,
+  "phone": "9876543210",
+  "email": "rev.john@example.com",
+  "photo": "photo_url"
+}
+```
+
+**Reverend Positions:**
+- "Council Chairman" (hierarchy 1)
+- "Pastorate Chairman" (hierarchy 2)
+- "Madathuvilai Church Presbyter" (hierarchy 3)
+
+### Get Reverends
+
+**GET** `/committee/reverends?year=2025`
+
+- Query param: `year` (optional, defaults to current year)
+- Returns reverends ordered by hierarchy
 
 ---
 
@@ -382,8 +600,16 @@
 
 ## Offering Types
 
-- "Paribalana Committee"
-- "Church Construction"
+### Monthly Offerings (Family-based, no MID needed):
+- "Paribalana Committee" - Monthly offering by each family
+- "Church Construction" - Monthly church building construction offering
+- One offering per family per month per type
+- Uses only hometaxno + admin who recorded
+
+### Special Offerings (Individual donations):
+- No restrictions, can be multiple per day
+- All fields optional except amount
+- For urgent prayer offerings or anonymous donations
 
 ## Committee Types
 
