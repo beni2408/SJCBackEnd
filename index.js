@@ -14,6 +14,24 @@ const app = express();
 
 app.use(express.json());
 
+// Root route for API status
+app.get("/", (req, res) => {
+  res.json({
+    message: "St. John's Church Management System API",
+    status: "Running",
+    version: "1.0.0",
+    endpoints: {
+      auth: "/api/auth",
+      tax: "/api/tax",
+      offering: "/api/offering",
+      committee: "/api/committee",
+      announcement: "/api/announcement",
+      dashboard: "/api/dashboard",
+      superAdmin: "/api/super-admin"
+    }
+  });
+});
+
 app.use("/api/auth", authRouter);
 app.use("/api/tax", taxRouter);
 app.use("/api/offering", offeringRouter);
@@ -22,7 +40,9 @@ app.use("/api/announcement", announcementRouter);
 app.use("/api/dashboard", dashboardRouter);
 app.use("/api/super-admin", superAdminRouter);
 
-app.listen(process.env.PORT, () => {
-  console.log(`Server is running on port ${process.env.PORT}`);
+const PORT = process.env.PORT || 10000;
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
   connectDB();
 });
