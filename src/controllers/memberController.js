@@ -89,6 +89,10 @@ export const loginMember = async (req, res) => {
       .status(200)
       .json({ message: "Login successful", token, memberID: member.memberID });
   } catch (error) {
+    console.log("Login error:", error.message);
+    if (error.name === 'MongoTimeoutError' || error.message.includes('buffering timed out')) {
+      return res.status(503).json({ message: "Database temporarily unavailable. Please try again." });
+    }
     res
       .status(500)
       .json({ message: "Failed to login member", error: error.message });
