@@ -1,6 +1,6 @@
 import { AnnouncementModel } from "../models/announcementModel.js";
 
-// Admin only - Create announcement/event
+// Admin only - Create announcement
 export const createAnnouncement = async (req, res) => {
   try {
     const { title, content, type, eventDate, priority } = req.body;
@@ -20,7 +20,7 @@ export const createAnnouncement = async (req, res) => {
   }
 };
 
-// Admin only - Update announcement/event
+// Admin only - Update announcement
 export const updateAnnouncement = async (req, res) => {
   try {
     const { id } = req.params;
@@ -37,23 +37,6 @@ export const updateAnnouncement = async (req, res) => {
   }
 };
 
-// Get all active announcements and events
-export const getAnnouncements = async (req, res) => {
-  try {
-    const { type } = req.query;
-    
-    const query = { status: "active" };
-    if (type) query.type = type;
-    
-    const announcements = await AnnouncementModel.find(query)
-      .sort({ priority: -1, createdAt: -1 });
-    
-    res.status(200).json({ announcements });
-  } catch (error) {
-    res.status(500).json({ message: "Failed to get announcements", error: error.message });
-  }
-};
-
 // Admin only - Delete announcement
 export const deleteAnnouncement = async (req, res) => {
   try {
@@ -67,5 +50,20 @@ export const deleteAnnouncement = async (req, res) => {
     res.status(200).json({ message: "Announcement deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: "Failed to delete announcement", error: error.message });
+  }
+};
+
+// Get announcements
+export const getAnnouncements = async (req, res) => {
+  try {
+    const { type } = req.query;
+    const query = { status: "active" };
+    if (type) query.type = type;
+    
+    const announcements = await AnnouncementModel.find(query).sort({ createdAt: -1 });
+    
+    res.status(200).json({ announcements });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to get announcements", error: error.message });
   }
 };

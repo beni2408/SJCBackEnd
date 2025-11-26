@@ -1,14 +1,24 @@
-import { Router } from "express";
-import { addCommitteeMember, updateCommitteeMember, getCommitteeMembers, deleteCommitteeMember, addReverend, getReverends } from "../controllers/committeeController.js";
+import express from "express";
+import {
+  addCommitteeMember,
+  updateCommitteeMember,
+  deleteCommitteeMember,
+  getCommitteeMembers,
+  addReverend,
+  getReverends
+} from "../controllers/committeeController.js";
 import { adminAuth } from "../middleware/adminAuth.js";
 
-const committeeRouter = Router();
+const router = express.Router();
 
-committeeRouter.post("/add", adminAuth, addCommitteeMember);
-committeeRouter.put("/update/:id", adminAuth, updateCommitteeMember);
-committeeRouter.get("/members", getCommitteeMembers);
-committeeRouter.delete("/delete/:id", adminAuth, deleteCommitteeMember);
-committeeRouter.post("/add-reverend", adminAuth, addReverend);
-committeeRouter.get("/reverends", getReverends);
+// Admin only routes
+router.post("/add", adminAuth, addCommitteeMember);
+router.put("/update/:id", adminAuth, updateCommitteeMember);
+router.delete("/delete/:id", adminAuth, deleteCommitteeMember);
+router.post("/add-reverend", adminAuth, addReverend);
 
-export default committeeRouter;
+// Public routes
+router.get("/members", getCommitteeMembers);
+router.get("/reverends", getReverends);
+
+export default router;

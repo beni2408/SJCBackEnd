@@ -81,11 +81,12 @@ export const loginMember = async (req, res) => {
     const token = jwt.sign({ id: member._id }, process.env.JWT_SECRET, {
       expiresIn: "1h",
     });
-    try {
-      await sendLoginNotification(member.email, member.name);
-    } catch (emailError) {
-      console.log("Email notification failed:", emailError.message);
-    }
+    // Email notification removed for better performance
+    // try {
+    //   await sendLoginNotification(member.email, member.name);
+    // } catch (emailError) {
+    //   console.log("Email notification failed:", emailError.message);
+    // }
     res
       .status(200)
       .json({ message: "Login successful", token, memberID: member.memberID });

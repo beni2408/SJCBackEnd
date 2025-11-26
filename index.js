@@ -1,5 +1,6 @@
 import express from "express";
 import mongoose from "mongoose";
+import cors from "cors";
 import dotenv from "dotenv";
 dotenv.config();
 import connectDB from "./src/config/connectDB.js";
@@ -12,6 +13,10 @@ import dashboardRouter from "./src/routes/dashboardRoutes.js";
 import superAdminRouter from "./src/routes/superAdminRoutes.js";
 const app = express();
 
+app.use(cors({
+  origin: ["http://localhost:5174", "http://localhost:3000", "https://sjc-parish-connect.vercel.app"],
+  credentials: true
+}));
 app.use(express.json());
 
 // Root route for API status

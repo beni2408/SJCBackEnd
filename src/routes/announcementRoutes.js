@@ -1,12 +1,20 @@
-import { Router } from "express";
-import { createAnnouncement, updateAnnouncement, getAnnouncements, deleteAnnouncement } from "../controllers/announcementController.js";
+import express from "express";
+import { 
+  createAnnouncement, 
+  updateAnnouncement, 
+  deleteAnnouncement, 
+  getAnnouncements 
+} from "../controllers/announcementController.js";
 import { adminAuth } from "../middleware/adminAuth.js";
 
-const announcementRouter = Router();
+const router = express.Router();
 
-announcementRouter.post("/create", adminAuth, createAnnouncement);
-announcementRouter.put("/update/:id", adminAuth, updateAnnouncement);
-announcementRouter.get("/list", getAnnouncements);
-announcementRouter.delete("/delete/:id", adminAuth, deleteAnnouncement);
+// Admin only routes
+router.post("/create", adminAuth, createAnnouncement);
+router.put("/update/:id", adminAuth, updateAnnouncement);
+router.delete("/delete/:id", adminAuth, deleteAnnouncement);
 
-export default announcementRouter;
+// Public routes
+router.get("/list", getAnnouncements);
+
+export default router;
