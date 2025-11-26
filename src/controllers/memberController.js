@@ -69,7 +69,8 @@ export const newMember = async (req, res) => {
 export const loginMember = async (req, res) => {
   try {
     const { memberID, password } = req.body;
-    const member = await MemberModel.findOne({ memberID }).maxTimeMS(5000);
+    
+    const member = await MemberModel.findOne({ memberID }).maxTimeMS(2000).lean();
     if (!member) {
       return res.status(401).json({ message: "Invalid member ID or password" });
     }

@@ -8,32 +8,17 @@ const connectDB = async () => {
     process.exit(1);
   }
 
-  const maxRetries = 3;
-  let retries = 0;
-
-  while (retries < maxRetries) {
-    try {
-      await mongoose.connect(process.env.MONGO_URI, {
-        serverSelectionTimeoutMS: 10000,
-        socketTimeoutMS: 45000,
-        connectTimeoutMS: 10000,
-        // bufferMaxEntries: 0,
-        maxPoolSize: 10,
-      });
-      console.log("Connected to MongoDB");
-      return;
-    } catch (error) {
-      retries++;
-      console.log(
-        `MongoDB connection attempt ${retries} failed:`,
-        error.message
-      );
-      if (retries >= maxRetries) {
-        console.log("Max retries reached. Exiting...");
-        process.exit(1);
-      }
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-    }
+  mongoose.set('bufferCommands', false);
+  
+  try {
+    await mongoose.connect(process.env.MONGO_URI, {
+      serverSelectionTimeoutMS: 3000,
+      socketTimeoutMS: 3000
+    });
+    console.log("Connected to MongoDB");
+  } catch (error) {
+    console.log("MongoDB connection failed:", error.message);
+    process.exit(1);
   }
 };
 
