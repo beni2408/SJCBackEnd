@@ -17,9 +17,7 @@ const connectDB = async () => {
       maxIdleTimeMS: 30000,
       serverSelectionTimeoutMS: 30000,
       socketTimeoutMS: 45000,
-      connectTimeoutMS: 30000,
-      bufferCommands: false,
-      bufferMaxEntries: 0
+      connectTimeoutMS: 30000
     });
     console.log("Connected to MongoDB");
   } catch (error) {
